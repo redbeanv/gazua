@@ -107,4 +107,4 @@ dist
 .idea/
 .DS_Store
 .vscode
-secret.js
+src/secret.js
