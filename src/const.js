@@ -1,6 +1,6 @@
 /** 상수 */
-const Const = {
+const constants = {
   SERVER_URL: 'https://api.upbit.com',
 };
 
-module.exports = Const;
+module.exports = constants;

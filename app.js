@@ -5,6 +5,7 @@ const sign = require('jsonwebtoken').sign;
 const fetch = require('node-fetch');
 const CONST = require('./src/const');
 const KEY = require('./src/secret');
+const Market = require('./src/module/market');
 
 /** 내 자산 조회*/
 // const.js payload = {
@@ -54,7 +55,7 @@ async function getCandleInfo(market = 'KRW-BTC') {
 
   const res = await fetch(url);
   const resData = await res.json();
-  console.log(resData)
+  // console.log(resData)
   if (res.ok) {
     return resData
   } else {
@@ -62,11 +63,36 @@ async function getCandleInfo(market = 'KRW-BTC') {
   }
 }
 
+/** 티커 조회 */
+async function getTickerInfo(market = 'KRW-BTC') {
+  let url = `${CONST.SERVER_URL}/v1/ticker?markets=${market}`;
+
+  const res = await fetch(url);
+  const resData = await res.json();
+  // console.log(resData);
+  if (res.ok) {
+    return resData
+  } else {
+    throw Error(resData)
+  }
+}
+
+let test = [];
 getKrwMarketCode()
   .then(marketInfoList => {
-    console.log(marketInfoList.length)
-    const codeList = marketInfoList.map(v => v.market);
+    const marketCodeList = marketInfoList.map(v => v.market);
+
     // TODO: 10개 정도씩 끊어서 fetch 해야할듯 우선은 btc로만 진행
-    // getCandleInfo(codeList[0])
+    getTickerInfo(marketCodeList).then(marketTickerList => {
+      console.log(marketTickerList)
+      let marketData;
+      marketTickerList.map(tickerInfo => {
+        marketData = new Market(tickerInfo.market, tickerInfo.trade_date);
+        test.push({marketName: marketData.market, ticker: marketData})
+      });
+    });
   });
 
+setTimeout(() => {
+  console.log(test)
+}, 1000)
